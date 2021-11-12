@@ -19,7 +19,6 @@ class HomeScreen extends StatelessWidget {
       leading: IconButton(
         icon: Icon(Icons.menu),
         onPressed: () {
-          
         },
       ),
     );
