@@ -1,5 +1,8 @@
 import 'package:creditbank/constants.dart';
-import 'package:creditbank/screens/login/components/home_screen.dart';
+import 'package:creditbank/screens/home/home.dart';
+import 'package:creditbank/screens/login/login_screen.dart';
+import 'package:creditbank/screens/profile/profile_screen.dart';
+import 'package:creditbank/screens/solscreen/sol_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -13,14 +16,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Credit Bank',
-      theme: ThemeData(
-        scaffoldBackgroundColor: kBackgroundColor,
-        appBarTheme: AppBarTheme(color: kPrimaryColor),
-        primaryColor: kPrimaryColor,
-        textTheme: Theme.of(context).textTheme.apply(bodyColor: kTextColor),
-      ),
-      home: const HomeScreen()
-    );
+        title: 'Credit Bank',
+        // darkTheme: ThemeData.dark(),
+        theme: ThemeData(
+          scaffoldBackgroundColor: kBackgroundColor,
+          appBarTheme: AppBarTheme(color: kPrimaryColor),
+          primaryColor: kPrimaryColor,
+          textTheme: Theme.of(context).textTheme.apply(bodyColor: kTextColor),
+        ),
+        home: HomeScreen());
   }
 }

@@ -1,36 +1,40 @@
 import 'dart:convert';
 
 import 'package:creditbank/constants.dart';
-import 'package:creditbank/screens/signup/signup_screen.dart';
+import 'package:creditbank/screens/login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-Future<UserLogin> createUserLogin(String email, String password) async {
+Future<UserSignup> createUserSignup(String email, String password,
+    String password_confirmation, String first_name, String last_name) async {
   final http.Response response = await http.post(
-    Uri.parse('https://creditbank.ir/app/api/login'),
+    Uri.parse('https://creditbank.ir/app/api/register'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
     body: jsonEncode(<String, String>{
       'email': email,
       'password': password,
+      'password_confirmation': password_confirmation,
+      'first_name': first_name,
+      'last_name': last_name,
     }),
   );
 
   if (response.statusCode == 200) {
-    return UserLogin.fromJson(json.decode(response.body));
+    return UserSignup.fromJson(json.decode(response.body));
   } else {
     throw Exception('Failed to Login User.');
   }
 }
 
-class UserLogin {
+class UserSignup {
   final String token;
 
-  UserLogin({required this.token});
+  UserSignup({required this.token});
 
-  factory UserLogin.fromJson(Map<String, dynamic> json) {
-    return UserLogin(
+  factory UserSignup.fromJson(Map<String, dynamic> json) {
+    return UserSignup(
       token: json['accessToken'],
     );
   }
@@ -44,12 +48,16 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  late Future<UserLogin> _futureLogin;
+  late Future<UserSignup> _futureSignup;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    TextEditingController first_nameController = TextEditingController();
+    TextEditingController last_nameController = TextEditingController();
     TextEditingController emailController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
+    TextEditingController password_confirmationController =
+        TextEditingController();
     return Column(
       children: <Widget>[
         Expanded(child: topClip(size)),
@@ -58,6 +66,23 @@ class _BodyState extends State<Body> {
           child: Column(
             // mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              TextFormField(
+                controller: first_nameController,
+                decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.person), hintText: 'First Name'),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              TextFormField(
+                controller: last_nameController,
+                decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.person_outline),
+                    hintText: 'Last Name'),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
               TextFormField(
                 controller: emailController,
                 decoration: const InputDecoration(
@@ -73,6 +98,16 @@ class _BodyState extends State<Body> {
                   hintText: 'Password',
                 ),
               ),
+              const SizedBox(
+                height: 20,
+              ),
+              TextFormField(
+                controller: password_confirmationController,
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.lock),
+                  hintText: 'Confirm Password',
+                ),
+              ),
               Align(
                 alignment: Alignment.topRight,
                 child: TextButton(
@@ -85,18 +120,20 @@ class _BodyState extends State<Body> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  print(emailController.text);
-                  print(passwordController.text);
-                  _futureLogin =
-                      createUserLogin(emailController.text, passwordController.text);
+                  _futureSignup = createUserSignup(
+                      emailController.text,
+                      passwordController.text,
+                      password_confirmationController.text,
+                      first_nameController.text,
+                      last_nameController.text);
                   showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          content: (_futureLogin == null)
+                          content: (_futureSignup == null)
                               ? Text('data')
-                              : FutureBuilder<UserLogin>(
-                                  future: _futureLogin,
+                              : FutureBuilder<UserSignup>(
+                                  future: _futureSignup,
                                   builder: (context, snapshot) {
                                     if (snapshot.hasData) {
                                       return Text(snapshot.data!.token);
@@ -109,7 +146,7 @@ class _BodyState extends State<Body> {
                         );
                       });
                 },
-                child: const Text('Log In'),
+                child: const Text('Sign Up'),
                 style: ElevatedButton.styleFrom(
                     minimumSize: Size(size.width, 50), primary: kPrimaryColor),
               ),
@@ -123,7 +160,7 @@ class _BodyState extends State<Body> {
                       height: 1,
                       width: MediaQuery.of(context).size.width / 2 - 60,
                     ),
-                    Text('or'),
+                    const Text('or'),
                     Container(
                       color: Colors.grey,
                       height: 1,
@@ -136,10 +173,11 @@ class _BodyState extends State<Body> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SignupScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()),
                   );
                 },
-                child: Text('Sign Up'),
+                child: const Text('Log In'),
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size(size.width, 50),
                   primary: Colors.white,
