@@ -12,8 +12,19 @@ class _PriceScreenState extends State<PriceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('data'),),
+      appBar: dAppBar(context),
       body: Body(),
+    );
+  }
+
+  dAppBar(BuildContext context) {
+    return AppBar(
+      title: Text('قیمت لحظه ای ارز ها'),
+      elevation: 0,
+      leading: IconButton(
+        icon: Icon(Icons.monetization_on_outlined),
+        onPressed: () {},
+      ),
     );
   }
 }

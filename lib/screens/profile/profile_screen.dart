@@ -15,7 +15,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      drawer: buildDrawer(),
+      // drawer: buildDrawer(),
       appBar: buildAppBar(context),
       body: Body(),
     );
@@ -23,6 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   buildAppBar(BuildContext context) {
     return AppBar(
+      title: Text('پروفایل'),
       elevation: 0,
       // leading: Builder(
       //   builder: (context) => IconButton(
@@ -31,40 +32,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
       //     ),
       //   ),
       leading: IconButton(
-        icon: Icon(Icons.menu),
-        onPressed: () => _scaffoldKey.currentState!.openDrawer(),
+        icon: Icon(Icons.monetization_on_outlined),
+        onPressed: () {},
       ),
     );
   }
 
   buildDrawer() {
-    return Drawer(child:
-    ListView(
-      // Important: Remove any padding from the ListView.
-      padding: EdgeInsets.zero,
-      children: [
-        const DrawerHeader(
-          decoration: BoxDecoration(
-            color: Colors.blue,
+    return Drawer(
+      child: ListView(
+        // Important: Remove any padding from the ListView.
+        padding: EdgeInsets.zero,
+        children: [
+          const DrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+            ),
+            child: Text('Drawer Header'),
           ),
-          child: Text('Drawer Header'),
-        ),
-        ListTile(
-          title: const Text('Item 1'),
-          onTap: () {
-            // Update the state of the app.
-            // ...
-          },
-        ),
-        ListTile(
-          title: const Text('Item 2'),
-          onTap: () {
-            // Update the state of the app.
-            // ...
-          },
-        ),
-      ],
-    ),);
-    
+          ListTile(
+            title: const Text('Item 1'),
+            onTap: () {
+              // Update the state of the app.
+              // ...
+            },
+          ),
+          ListTile(
+            title: const Text('Item 2'),
+            onTap: () {
+              // Update the state of the app.
+              // ...
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

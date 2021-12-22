@@ -1,18 +1,40 @@
 import 'package:creditbank/constants.dart';
+import 'package:creditbank/screens/creditcard/creditcard.dart';
+import 'package:creditbank/services.dart';
 import 'package:creditbank/screens/home/home.dart';
 import 'package:creditbank/screens/login/login_screen.dart';
 import 'package:creditbank/screens/profile/profile_screen.dart';
 import 'package:creditbank/screens/solscreen/sol_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  String temp = await Services.getToken();
+  runApp(MyApp(
+    token: temp,
+  ));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MyApp extends StatefulWidget {
+  String token;
+  MyApp({Key? key, required this.token}) : super(key: key);
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late String token;
+
+  void initState() {
+    super.initState();
+    token = widget.token;
+    // token = '42|HxtbnWadadMhk4RGXmCfIsSyqbVxnKdWyQL041HM';
+    print(token);
+    // print(token);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -24,6 +46,7 @@ class MyApp extends StatelessWidget {
           primaryColor: kPrimaryColor,
           textTheme: Theme.of(context).textTheme.apply(bodyColor: kTextColor),
         ),
-        home: HomeScreen());
+        home: token == '0' ? SolScreen() : HomeScreen());
+    // home: const CreditCardScreen());
   }
 }

@@ -1,3 +1,4 @@
+import 'package:creditbank/screens/exchange/exchange_screen.dart';
 import 'package:creditbank/screens/login/login_screen.dart';
 import 'package:creditbank/screens/price/price_screen.dart';
 import 'package:creditbank/screens/profile/profile_screen.dart';
@@ -13,9 +14,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
   final _pageOptions = [
     ProfileScreen(),
+    ExchangeScreen(),
     PriceScreen(),
   ];
   void _onItemTapped(int index) {
@@ -31,6 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.local_mall_outlined), label: 'Exchange'),
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
         ],
         currentIndex: _selectedIndex,

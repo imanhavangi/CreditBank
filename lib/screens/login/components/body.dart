@@ -1,9 +1,11 @@
 import 'dart:convert';
-
+import 'package:creditbank/screens/home/home.dart';
+import 'package:creditbank/services.dart';
 import 'package:creditbank/constants.dart';
 import 'package:creditbank/screens/signup/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<UserLogin> createUserLogin(String email, String password) async {
   final http.Response response = await http.post(
@@ -18,6 +20,9 @@ Future<UserLogin> createUserLogin(String email, String password) async {
   );
 
   if (response.statusCode == 200) {
+    // String s = json.decode(response.body)['accessToken'];
+    // print(s);
+    // Services.setToken(s);
     return UserLogin.fromJson(json.decode(response.body));
   } else {
     throw Exception('Failed to Login User.');
@@ -45,6 +50,15 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> {
   late Future<UserLogin> _futureLogin;
+  int isLogin = 0;
+  @override
+  void dispose() {
+    // TODO: implement dispose
+  }
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+  }
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -84,11 +98,20 @@ class _BodyState extends State<Body> {
                 height: 20,
               ),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   print(emailController.text);
                   print(passwordController.text);
-                  _futureLogin =
-                      createUserLogin(emailController.text, passwordController.text);
+                  _futureLogin = createUserLogin(
+                      emailController.text, passwordController.text);
+                  // if (_futureLogin == null) {
+                  //   print('object');
+                  // } else {
+                  //   // print('')
+                  //   Navigator.of(context).push(
+                  //       MaterialPageRoute(builder: (BuildContext context) {
+                  //     return HomeScreen();
+                  //   }));
+                  // }
                   showDialog(
                       context: context,
                       builder: (BuildContext context) {
@@ -99,15 +122,57 @@ class _BodyState extends State<Body> {
                                   future: _futureLogin,
                                   builder: (context, snapshot) {
                                     if (snapshot.hasData) {
-                                      return Text(snapshot.data!.token);
+                                      Services.setToken(snapshot.data!.token);
+                                      print(snapshot.data!.token);
+                                      // SharedPreferences prefs;
+                                      // prefs.setString(
+                                      //     'token', snapshot.data!.token);
+                                      // isLogin = 1;
+                                      return Container(
+                                        height: 100,
+                                        width: 100,
+                                        child: Column(
+                                          children: [
+                                            Text('ورود با موفقیت انجام شد!'),
+                                            ElevatedButton(
+                                                onPressed: () =>
+                                                    Navigator.pushReplacement(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                HomeScreen())),
+                                                child: Text(
+                                                    'انتقال به صفحه اصلی')),
+                                          ],
+                                        ),
+                                      );
+                                      // Navigator.push(
+                                      //     context,
+                                      //     MaterialPageRoute(
+                                      //         builder: (context) =>
+                                      //             HomeScreen()));
+                                      // return Text('ورود با موفقیت انجام شد');
                                     } else if (snapshot.hasError) {
-                                      return Text("${snapshot.error}");
+                                      return Text(
+                                          "اطلاعات وارد شده صحیح نمی باشد");
                                     }
-                                    return CircularProgressIndicator();
+                                    return SizedBox(
+                                      height: 50,
+                                      width: 50,
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                          backgroundColor: Colors.cyanAccent,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Colors.red),
+                                        ),
+                                      ),
+                                    );
                                   },
                                 ),
                         );
                       });
+                  if (isLogin == 1) {}
                 },
                 child: const Text('Log In'),
                 style: ElevatedButton.styleFrom(

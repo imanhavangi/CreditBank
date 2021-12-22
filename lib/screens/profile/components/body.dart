@@ -1,6 +1,11 @@
 import 'package:creditbank/constants.dart';
+import 'package:creditbank/screens/cash/cash.dart';
+import 'package:creditbank/screens/creditcard/components/body.dart';
+import 'package:creditbank/screens/creditcard/creditcard.dart';
+import 'package:creditbank/screens/home/home.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:progress_indicators/progress_indicators.dart';
 
 class Body extends StatefulWidget {
   const Body({Key? key}) : super(key: key);
@@ -12,6 +17,8 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
+    Future<Profile> futurePrice = getProfile();
+
     return Column(
       children: <Widget>[
         Padding(
@@ -23,20 +30,45 @@ class _BodyState extends State<Body> {
               Row(
                 // mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Column(
-                    // mainAxisAlignment: MainAxisAlignment.,
-                    textDirection: TextDirection.rtl,
-                    children: <Widget>[
-                      Text('ایمان هاونگی'),
-                      Text(
-                        'تایید شده',
-                        textAlign: TextAlign.end,
-                        style: TextStyle(
-                          color: Colors.green,
-                        ),
-                      ),
-                    ],
+                  FutureBuilder<Profile>(
+                    future: futurePrice,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Column(
+                          textDirection: TextDirection.rtl,
+                          children: <Widget>[
+                            Text(snapshot.data!.user['name']),
+                            Text(
+                              'تایید شده',
+                              textAlign: TextAlign.end,
+                              style: TextStyle(
+                                color: Colors.green,
+                              ),
+                            ),
+                          ],
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text("${snapshot.error}");
+                      }
+                      return JumpingDotsProgressIndicator(
+                        fontSize: 20.0,
+                      );
+                    },
                   ),
+                  // Column(
+                  //   // mainAxisAlignment: MainAxisAlignment.,
+                  //   textDirection: TextDirection.rtl,
+                  //   children: <Widget>[
+                  //     Text('ایمان هاونگی'),
+                  //     Text(
+                  //       'تایید شده',
+                  //       textAlign: TextAlign.end,
+                  //       style: TextStyle(
+                  //         color: Colors.green,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                   SizedBox(
                     width: 20,
                   ),
@@ -60,7 +92,13 @@ class _BodyState extends State<Body> {
           height: 30,
         ),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CashScreen(),
+                ));
+          },
           style: ElevatedButton.styleFrom(
               primary: Colors.white, onPrimary: Colors.black),
           child: Container(
@@ -72,10 +110,30 @@ class _BodyState extends State<Body> {
                 Row(
                   children: <Widget>[
                     IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CashScreen(),
+                              ));
+                        },
                         icon: Icon(Icons.chevron_left_outlined)),
                     Text('تومان'),
-                    Text('0'),
+                    FutureBuilder<Profile>(
+                      future: futurePrice,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return Text(snapshot.data!.wallets["total_assets"]
+                              .toString());
+                        } else if (snapshot.hasError) {
+                          return Text("${snapshot.error}");
+                        }
+                        return JumpingDotsProgressIndicator(
+                          fontSize: 20.0,
+                        );
+                      },
+                    ),
+                    // Text('0'),
                   ],
                 ),
                 Row(
@@ -93,7 +151,14 @@ class _BodyState extends State<Body> {
         ),
         rowButtonBuilder('مالی', Icons.calculate_outlined, () {}),
         rowButtonBuilder('سفارشات', Icons.local_mall_outlined, () {}),
-        rowButtonBuilder('حساب های بانکی', Icons.credit_card_outlined, () {}),
+        rowButtonBuilder(
+            'حساب های بانکی',
+            Icons.credit_card_outlined,
+            () => {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => CreditCardScreen(),
+                  ))
+                }),
         rowButtonBuilder('تیکت ها', Icons.forum_outlined, () {}),
         ElevatedButton(
           onPressed: () {},
@@ -122,13 +187,7 @@ class _BodyState extends State<Body> {
       String text, IconData icon, Function function) {
     return ElevatedButton(
       onPressed: () {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                content: Text('sala'),
-              );
-            });
+        function();
       },
       style: ElevatedButton.styleFrom(
           primary: Colors.white, onPrimary: kPrimaryColor),
