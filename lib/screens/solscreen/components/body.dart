@@ -25,7 +25,10 @@ class Body extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => LoginScreen()),
                   );
                 },
-                child: Text('Log In'),
+                child: Text(
+                  'ورود',
+                  style: TextStyle(fontFamily: 'iransans'),
+                ),
                 style: ElevatedButton.styleFrom(
                     minimumSize: Size(size.width, 50), primary: kPrimaryColor),
               ),
@@ -39,7 +42,10 @@ class Body extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => SignupScreen()),
                   );
                 },
-                child: Text('Sign Up'),
+                child: Text(
+                  'ثبت نام',
+                  style: TextStyle(fontFamily: 'iransans'),
+                ),
                 style: ElevatedButton.styleFrom(
                     minimumSize: Size(size.width, 50),
                     primary: Colors.white,

@@ -73,18 +73,26 @@ class _BodyState extends State<Body> {
               if (snapshot.hasData) {
                 return Column(
                   children: <Widget>[
-                    buildCashCoin(
-                        'IRT',
-                        'تومان',
-                        'assets/coins/IRT.png',
-                        snapshot.data!.wallets['summary']['IRT']['balance']
-                            .toString()),
-                    buildCashCoin(
-                        'BTC',
-                        'بیت کوین',
-                        'assets/coins/BTC.png',
-                        snapshot.data!.wallets['summary']['BTC']['balance']
-                            .toString()),
+                    (snapshot.data!.wallets['summary']
+                            .toString()
+                            .contains("IRT"))
+                        ? buildCashCoin(
+                            'IRT',
+                            'تومان',
+                            'assets/coins/IRT.png',
+                            snapshot.data!.wallets['summary']['IRT']['balance']
+                                .toString())
+                        : Container(),
+                    (snapshot.data!.wallets['summary']
+                            .toString()
+                            .contains("BTC"))
+                        ? buildCashCoin(
+                            'BTC',
+                            'بیت کوین',
+                            'assets/coins/BTC.png',
+                            snapshot.data!.wallets['summary']['BTC']['balance']
+                                .toString())
+                        : Container(),
                   ],
                 );
               } else if (snapshot.hasError) {

@@ -3,9 +3,56 @@ import 'package:creditbank/screens/creditcard/components/body.dart';
 import 'package:creditbank/screens/exchange/components/buy.dart';
 import 'package:creditbank/screens/exchange/components/sell.dart';
 import 'package:creditbank/screens/price/components/body.dart';
+import 'package:creditbank/services.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
+
+Future<Exchange> createOrder(double volume, double price, String coin_pair,
+    int deal_type, String symbol) async {
+  Response response = (await Dio().post(
+    'https://creditbank.ir/alaadin/api/orders',
+    data: {
+      'volume': volume,
+      'price': price,
+      'coin_pair': coin_pair,
+      'deal_type': deal_type,
+      'fee': 0,
+      'type': 1,
+      'symbol': symbol,
+    },
+    options: Options(
+        headers: {
+          'Authorization': 'Bearer ${await Services.getToken()}',
+        },
+        followRedirects: false,
+        validateStatus: (status) {
+          return status! < 500;
+        }),
+  ));
+
+  print(response.statusCode);
+  if (response.statusCode == 200) {
+    return Exchange.fromJson((response.data));
+  } else if (response.statusCode == 400) {
+    return Exchange.fromJson((response.data));
+  } else {
+    throw Exception('Failed to create order!');
+  }
+}
+
+class Exchange {
+  final data;
+
+  Exchange({required this.data});
+
+  factory Exchange.fromJson(Map<String, dynamic> json) {
+    return Exchange(
+      data: json,
+    );
+  }
+}
 
 class Body extends StatefulWidget {
   const Body({Key? key}) : super(key: key);
@@ -18,6 +65,7 @@ class _BodyState extends State<Body> {
   TextEditingController price1 = TextEditingController();
   TextEditingController price2 = TextEditingController();
   double now = 0;
+  late Future<Exchange> _futureOrder;
 
   List<bool> isSelected = [true, false];
   List<bool> coinList = [];
@@ -158,7 +206,72 @@ class _BodyState extends State<Body> {
         height: 40,
         child: ElevatedButton(
             style: ElevatedButton.styleFrom(primary: kPrimaryColor),
-            onPressed: () {},
+            onPressed: () {
+              _futureOrder = createOrder(double.parse(price1.text), now, "IRT",
+                  isSelected[0] ? 1 : 2, "IRT");
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      content: (_futureOrder == null)
+                          ? Text('data')
+                          : FutureBuilder<Exchange>(
+                              future: _futureOrder,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  if (snapshot.data!.data['success']) {
+                                    return Container(
+                                      height: 200,
+                                      width: 120,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        textDirection: TextDirection.rtl,
+                                        children: <Widget>[
+                                          Text(isSelected[0]
+                                              ? "سفارش خرید"
+                                              : "سفارش فروش"),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                              "تعداد ارز: ${snapshot.data!.data['data']['order']['volume']}"),
+                                          Text(
+                                              "قیمت واحد هر ارز: ${snapshot.data!.data['data']['order']['price']}"),
+                                          Text(
+                                              "مجموع سفارش: ${snapshot.data!.data['data']['order']['total']}"),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text("موجودی باقی مانده"),
+                                          Text(
+                                              "${snapshot.data!.data['data']['wallet']['balance']}")
+                                        ],
+                                      ),
+                                    );
+                                  } else {
+                                    return Container(
+                                      height: 50,
+                                      width: 100,
+                                      child: Center(
+                                        child: Text(
+                                          "!موجودی کافی نمی باشد",
+                                          style: TextStyle(
+                                              fontFamily: 'iransans',
+                                              fontSize: 18),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                } else if (snapshot.hasError) {
+                                  return Text("${snapshot.error}");
+                                }
+                                return CircularProgressIndicator();
+                              },
+                            ),
+                    );
+                  });
+            },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               textDirection: TextDirection.rtl,
@@ -342,7 +455,8 @@ class _BodyState extends State<Body> {
                 // color: Colors.black,
                 style: TextStyle(fontSize: 20),
                 decoration: InputDecoration(
-                  border: InputBorder.none,
+                  fillColor: Colors.black,
+                  // border: InputBorder(borderSide: BorderSide(color: Colors.black)),
                   // labelText: 'Enter Name',
                   // hintText: 'Enter Your Name'
                 ),
@@ -396,6 +510,7 @@ class _BodyState extends State<Body> {
                 controller: price2,
                 // color: Colors.black,
                 onChanged: (value) async {
+                  print("saf: " + price1.text);
                   value != ""
                       ? price1.text = (double.parse(value) / now).toString()
                       : price1.text = "";

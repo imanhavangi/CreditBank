@@ -73,25 +73,36 @@ class _BodyState extends State<Body> {
             // mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TextFormField(
+                textDirection: TextDirection.rtl,
                 controller: emailController,
                 decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.email), hintText: 'Email'),
+                  hintTextDirection: TextDirection.rtl,
+                  prefixIcon: Icon(Icons.email),
+                  hintText: 'ایمیل',
+                  hintStyle: TextStyle(fontFamily: 'iransans'),
+                ),
               ),
               const SizedBox(
                 height: 20,
               ),
               TextFormField(
+                textDirection: TextDirection.rtl,
                 controller: passwordController,
                 decoration: const InputDecoration(
+                  hintTextDirection: TextDirection.rtl,
                   prefixIcon: Icon(Icons.lock),
-                  hintText: 'Password',
+                  hintText: 'رمز عبور',
+                  hintStyle: TextStyle(fontFamily: 'iransans'),
                 ),
               ),
               Align(
-                alignment: Alignment.topRight,
+                alignment: Alignment.topLeft,
                 child: TextButton(
                   onPressed: () {},
-                  child: const Text('Forgot Password?'),
+                  child: const Text(
+                    'رمز خود را فراموش کرده اید؟',
+                    style: TextStyle(fontFamily: 'iransans'),
+                  ),
                 ),
               ),
               const SizedBox(
@@ -174,7 +185,7 @@ class _BodyState extends State<Body> {
                       });
                   if (isLogin == 1) {}
                 },
-                child: const Text('Log In'),
+                child: const Text('ورود'),
                 style: ElevatedButton.styleFrom(
                     minimumSize: Size(size.width, 50), primary: kPrimaryColor),
               ),
@@ -204,7 +215,7 @@ class _BodyState extends State<Body> {
                     MaterialPageRoute(builder: (context) => SignupScreen()),
                   );
                 },
-                child: Text('Sign Up'),
+                child: Text('ثبت نام'),
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size(size.width, 50),
                   primary: Colors.white,

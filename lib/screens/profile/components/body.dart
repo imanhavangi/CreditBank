@@ -1,8 +1,11 @@
 import 'package:creditbank/constants.dart';
+import 'package:creditbank/main.dart';
 import 'package:creditbank/screens/cash/cash.dart';
 import 'package:creditbank/screens/creditcard/components/body.dart';
 import 'package:creditbank/screens/creditcard/creditcard.dart';
 import 'package:creditbank/screens/home/home.dart';
+import 'package:creditbank/screens/solscreen/sol_screen.dart';
+import 'package:creditbank/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:progress_indicators/progress_indicators.dart';
@@ -161,7 +164,23 @@ class _BodyState extends State<Body> {
                 }),
         rowButtonBuilder('تیکت ها', Icons.forum_outlined, () {}),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            Services.setToken('0');
+            // MyApp(
+            //     token: '0',
+            //   );
+            // setState(() {
+            //   MyApp(
+            //     token: '0',
+            //   );
+            // });
+            Navigator.pushReplacement(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      SolScreen(),
+                ));
+          },
           style: ElevatedButton.styleFrom(
               primary: Colors.white, onPrimary: Colors.black),
           child: Container(

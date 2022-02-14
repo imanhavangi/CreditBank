@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:creditbank/constants.dart';
@@ -12,12 +13,13 @@ Future<Profile> getProfile() async {
 // );
   var dio = Dio();
   // print("4 bilion"+ await Services.getToken());
-  dio.options.headers['Authorization'] =
-      'Bearer 42|HxtbnWadadMhk4RGXmCfIsSyqbVxnKdWyQL041HM';
-  // dio.options.headers['token'] = '${Services.getToken()}';
+  // dio.options.headers['Authorization'] =
+  //     'Bearer 42|HxtbnWadadMhk4RGXmCfIsSyqbVxnKdWyQL041HM';
+  dio.options.headers['Authorization'] = 'Bearer ${await Services.getToken()}';
+  dio.options.headers['Accept'] = 'application/json';
 
   final response = await dio.get('https://creditbank.ir/app/api/me');
-  print(response.data["data"]["user"]["bank_cards"]);
+  // print(response.data["data"]["user"]["bank_cards"]);
 
   if (response.statusCode == 200) {
     // print(response.data.toString());
@@ -77,6 +79,21 @@ class _BodyState extends State<Body> {
                     snapshot.data!.creditcards[i]["computed_bank"],
                     snapshot.data!.creditcards[i]["computed_status"]);
               }
+              return Center(
+                child: Column(
+                  // mainAxisAlignment: MainAxisAlignment,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 150,
+                    ),
+                    Text(
+                      'کارت ثبت شده ای وجود ندارد.',
+                      textDirection: TextDirection.rtl,
+                      style: TextStyle(fontFamily: 'iransans', fontSize: 22),
+                    ),
+                  ],
+                ),
+              );
               // return Text(
               //   snapshot.data!.creditcards + " \$",
               //   style: TextStyle(fontSize: 20.0),
